@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0d5c46">
+<title>Smart School Al-Wasi</title>
+<style>
+:root{--bg:#eef3f1;--card:#fff;--tx:#17231f;--mut:#5d6f68;--g:#0d5c46;--g2:#e1efe9;--ln:#d3dfda;--H:#1b8a5a;--S:#d99a1c;--I:#2b6fc2;--A:#c8412f}
+@media(prefers-color-scheme:dark){:root{--bg:#0f1a17;--card:#17251f;--tx:#e8f1ed;--mut:#9bb0a7;--g:#3fb68b;--g2:#1d3a30;--ln:#2a3f37}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+.hide{display:none!important}
+header{background:var(--g);color:#fff;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+header b{font-size:18px}header small{display:block;opacity:.85}
+header button{background:rgba(255,255,255,.18);color:#fff;border:0;padding:8px 12px;border-radius:8px}
+nav{display:flex;gap:4px;overflow-x:auto;padding:8px 12px;background:var(--card);border-bottom:1px solid var(--ln)}
+nav button{flex:none;border:0;background:none;color:var(--mut);padding:9px 14px;border-radius:8px;font-weight:600}
+nav button.on{background:var(--g2);color:var(--g)}
+main{max-width:860px;margin:0 auto;padding:14px}
+.card{background:var(--card);border:1px solid var(--ln);border-radius:10px;padding:14px;margin-bottom:14px}
+h2{margin:0 0 10px;font-size:18px}
+label{display:block;font-size:13px;color:var(--mut);margin:8px 0 3px}
+input,select,textarea{width:100%;padding:10px;border:1px solid var(--ln);border-radius:8px;background:var(--bg);color:var(--tx);font:inherit}
+.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
+.btn{background:var(--g);color:#fff;border:0;padding:11px 16px;border-radius:8px;font-weight:600;font:inherit;font-weight:600;cursor:pointer}
+.btn.alt{background:var(--g2);color:var(--g)}.btn.del{background:none;color:var(--A);padding:6px 10px}
+:focus-visible{outline:3px solid var(--S);outline-offset:2px}
+.sis{border-top:1px solid var(--ln);padding:10px 0}
+.sis:first-child{border-top:0}
+.sis .n{font-weight:600}.sis .nis{color:var(--mut);font-size:13px}
+.st{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px}
+.st button{border:2px solid var(--ln);background:var(--card);color:var(--tx);padding:11px 0;border-radius:8px;font-weight:700;font-size:15px}
+.st button.on[data-s=H]{background:var(--H);border-color:var(--H);color:#fff}
+.st button.on[data-s=S]{background:var(--S);border-color:var(--S);color:#fff}
+.st button.on[data-s=I]{background:var(--I);border-color:var(--I);color:#fff}
+.st button.on[data-s=A]{background:var(--A);border-color:var(--A);color:#fff}
+.cat{margin-top:6px}
+.bar{position:sticky;bottom:0;background:var(--card);border-top:1px solid var(--ln);padding:10px 14px;margin:0 -14px -14px;display:flex;gap:8px;align-items:center}
+.bar .btn{flex:1}
+.sc{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{border:1px solid var(--ln);padding:6px 8px;text-align:center;white-space:nowrap}
+td.l,th.l{text-align:left}
+td.H{color:var(--H)}td.S{color:var(--S)}td.I{color:var(--I)}td.A{color:var(--A)}td.H,td.S,td.I,td.A{font-weight:700}
+.msg{color:var(--A);min-height:20px;font-size:14px}
+.mut{color:var(--mut);font-size:14px}
+#login{max-width:380px;margin:12vh auto 0;padding:14px}
+#login h1{color:var(--g);margin:0 0 4px}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#17231f;color:#fff;padding:10px 16px;border-radius:8px;z-index:9}
+@media print{header,nav,.noprint,#toast{display:none!important}body{background:#fff;color:#000}.card{border:0;padding:0}}
+</style>
+</head>
+<body>
+<section id="login" class="hide">
+  <h1>Smart School Al-Wasi</h1>
+  <p class="mut">Masuk dengan akun yang diberikan admin sekolah.</p>
+  <div class="card">
+    <label for="em">Email</label><input id="em" type="email" autocomplete="username">
+    <label for="pw">Kata sandi</label><input id="pw" type="password" autocomplete="current-password">
+    <p class="msg" id="lerr"></p>
+    <button class="btn" id="bmasuk" style="width:100%">Masuk</button>
+  </div>
+</section>
+
+<section id="app" class="hide">
+  <header><div><b>Smart School Al-Wasi</b><small id="who"></small></div><button id="bkeluar">Keluar</button></header>
+  <nav id="nav"></nav>
+  <main>
+    <div id="p-absensi" class="pg">
+      <div class="card">
+        <h2>Daftar hadir</h2>
+        <div class="row"><div><label for="a-kelas">Kelas</label><select id="a-kelas"></select></div>
+        <div><label for="a-tgl">Tanggal</label><input id="a-tgl" type="date"></div></div>
+      </div>
+      <div class="card" id="a-list"><p class="mut">Pilih kelas dan tanggal.</p></div>
+    </div>
+
+    <div id="p-laporan" class="pg hide">
+      <div class="card noprint">
+        <h2>Laporan kehadiran</h2>
+        <div class="row"><div><label for="l-kelas">Kelas</label><select id="l-kelas"></select></div>
+        <div><label for="l-bln">Bulan</label><input id="l-bln" type="month"></div></div>
+        <div class="row" style="margin-top:10px"><button class="btn" id="l-tampil">Tampilkan</button>
+        <button class="btn alt" id="l-csv">Unduh Excel (CSV)</button>
+        <button class="btn alt" id="l-cetak">Cetak / PDF</button></div>
+      </div>
+      <div class="card" id="l-out"><p class="mut">Pilih kelas dan bulan, lalu tekan Tampilkan.</p></div>
+    </div>
+
+    <div id="p-siswa" class="pg hide">
+      <div class="card">
+        <h2>Tambah siswa</h2>
+        <label for="s-kelas">Kelas</label><select id="s-kelas"></select>
+        <div class="row"><div><label for="s-nama">Nama siswa</label><input id="s-nama"></div>
+        <div><label for="s-nis">NIS (opsional)</label><input id="s-nis"></div></div>
+        <button class="btn" id="s-tambah" style="margin-top:10px">Simpan siswa</button>
+        <label for="s-massal">Atau tempel banyak nama (satu nama per baris)</label>
+        <textarea id="s-massal" rows="4"></textarea>
+        <button class="btn alt" id="s-simpanmassal" style="margin-top:10px">Simpan semua nama</button>
+      </div>
+      <div class="card"><h2>Daftar siswa</h2><div id="s-list"></div></div>
+    </div>
+
+    <div id="p-kelas" class="pg hide">
+      <div class="card">
+        <h2>Tambah kelas</h2>
+        <div class="row"><div><label for="k-nama">Nama kelas (contoh: VII A)</label><input id="k-nama"></div></div>
+        <button class="btn" id="k-tambah" style="margin-top:10px">Simpan kelas</button>
+      </div>
+      <div class="card"><h2>Daftar kelas</h2><div id="k-list"></div></div>
+    </div>
+  </main>
+</section>
+<div id="toast" class="hide"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import { getFirestore, collection, doc, getDoc, getDocs, addDoc, deleteDoc, query, where, writeBatch, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey: "AIzaSyAAkKwUGlHg7EEwD70OaGqJqR60rCdPp88",
+  authDomain: "smart-school-al-wasi.firebaseapp.com",
+  projectId: "smart-school-al-wasi",
+  storageBucket: "smart-school-al-wasi.firebasestorage.app",
+  messagingSenderId: "995889782561",
+  appId: "1:995889782561:web:c30f4f7ce95b11b4092860"
+});
+const auth = getAuth(app), db = getFirestore(app);
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const byNama = (a, b) => a.nama.localeCompare(b.nama, "id");
+const S = { user: null, profil: null, kelas: [], cur: {}, lap: null };
+
+function toast(t) { const e = $("toast"); e.textContent = t; e.classList.remove("hide"); clearTimeout(toast.t); toast.t = setTimeout(() => e.classList.add("hide"), 2500); }
+function hariIni() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
+
+// ---- Login ----
+$("bmasuk").onclick = async () => {
+  $("lerr").textContent = "";
+  try { await signInWithEmailAndPassword(auth, $("em").value.trim(), $("pw").value); }
+  catch (e) { $("lerr").textContent = "Email atau kata sandi salah. Periksa lalu coba lagi."; }
+};
+$("pw").onkeydown = e => { if (e.key === "Enter") $("bmasuk").click(); };
+$("bkeluar").onclick = () => signOut(auth);
+
+onAuthStateChanged(auth, async u => {
+  S.user = u;
+  if (!u) { $("app").classList.add("hide"); $("login").classList.remove("hide"); return; }
+  const p = await getDoc(doc(db, "users", u.uid)).catch(() => null);
+  if (!p || !p.exists()) {
+    $("lerr").textContent = "Akun ini belum diberi peran. Hubungi admin sekolah.";
+    await signOut(auth); return;
+  }
+  S.profil = p.data();
+  $("login").classList.add("hide"); $("app").classList.remove("hide");
+  $("who").textContent = `${S.profil.nama || u.email} (${S.profil.peran})`;
+  await muatKelas(); buatNav(); tampil("absensi");
+});
+
+// ---- Navigasi ----
+function buatNav() {
+  const admin = S.profil.peran === "admin";
+  const t = [["absensi","Absensi"],["laporan","Laporan"]];
+  if (admin) t.push(["siswa","Siswa"],["kelas","Kelas"]);
+  $("nav").innerHTML = t.map(([k,n]) => `<button data-t="${k}">${n}</button>`).join("");
+  $("nav").onclick = e => { const k = e.target.dataset.t; if (k) tampil(k); };
+}
+function tampil(k) {
+  document.querySelectorAll(".pg").forEach(p => p.classList.toggle("hide", p.id !== "p-" + k));
+  document.querySelectorAll("#nav button").forEach(b => b.classList.toggle("on", b.dataset.t === k));
+  if (k === "absensi") muatAbsensi();
+  if (k === "siswa") muatSiswa();
+  if (k === "kelas") renderKelas();
+}
+
+// ---- Kelas ----
+async function muatKelas() {
+  const s = await getDocs(collection(db, "kelas"));
+  S.kelas = s.docs.map(d => ({ id: d.id, ...d.data() })).sort(byNama);
+  const opt = S.kelas.length ? S.kelas.map(k => `<option value="${k.id}">${esc(k.nama)}</option>`).join("") : `<option value="">Belum ada kelas</option>`;
+  ["a-kelas","l-kelas","s-kelas"].forEach(id => { const v = $(id).value; $(id).innerHTML = opt; if (v) $(id).value = v; });
+}
+function renderKelas() {
+  $("k-list").innerHTML = S.kelas.map(k => `<div class="sis row" style="align-items:center"><span class="n">${esc(k.nama)}</span><button class="btn del" data-id="${k.id}" style="flex:none">Hapus</button></div>`).join("") || `<p class="mut">Belum ada kelas. Tambahkan kelas pertama di atas.</p>`;
+}
+$("k-tambah").onclick = async () => {
+  const nama = $("k-nama").value.trim(); if (!nama) return toast("Isi nama kelas dulu");
+  await addDoc(collection(db, "kelas"), { nama }); $("k-nama").value = "";
+  await muatKelas(); renderKelas(); toast("Kelas disimpan");
+};
+$("k-list").onclick = async e => {
+  const id = e.target.dataset.id; if (!id) return;
+  if (!confirm("Hapus kelas ini? Data siswa di kelas ini tidak ikut terhapus.")) return;
+  await deleteDoc(doc(db, "kelas", id)); await muatKelas(); renderKelas(); toast("Kelas dihapus");
+};
+
+// ---- Siswa ----
+async function siswaDi(kid) {
+  if (!kid) return [];
+  const s = await getDocs(query(collection(db, "siswa"), where("kelasId", "==", kid)));
+  return s.docs.map(d => ({ id: d.id, ...d.data() })).filter(x => x.aktif !== false).sort(byNama);
+}
+async function muatSiswa() {
+  const l = await siswaDi($("s-kelas").value);
+  $("s-list").innerHTML = l.map((s, i) => `<div class="sis row" style="align-items:center"><div><span class="n">${i+1}. ${esc(s.nama)}</span><div class="nis">${esc(s.nis || "")}</div></div><button class="btn del" data-id="${s.id}" style="flex:none">Hapus</button></div>`).join("") || `<p class="mut">Belum ada siswa di kelas ini.</p>`;
+}
+$("s-kelas").onchange = muatSiswa;
+async function tambahSiswa(nama, nis) {
+  const kelasId = $("s-kelas").value; if (!kelasId) return toast("Pilih kelas dulu");
+  await addDoc(collection(db, "siswa"), { nama, nis: nis || "", kelasId, aktif: true });
+}
+$("s-tambah").onclick = async () => {
+  const n = $("s-nama").value.trim(); if (!n) return toast("Isi nama siswa dulu");
+  await tambahSiswa(n, $("s-nis").value.trim()); $("s-nama").value = ""; $("s-nis").value = "";
+  muatSiswa(); toast("Siswa disimpan");
+};
+$("s-simpanmassal").onclick = async () => {
+  const baris = $("s-massal").value.split("\n").map(x => x.trim()).filter(Boolean);
+  if (!baris.length) return toast("Tempel daftar nama dulu");
+  for (const n of baris) await tambahSiswa(n, "");
+  $("s-massal").value = ""; muatSiswa(); toast(`${baris.length} siswa disimpan`);
+};
+$("s-list").onclick = async e => {
+  const id = e.target.dataset.id; if (!id) return;
+  if (!confirm("Hapus siswa ini dari daftar?")) return;
+  await deleteDoc(doc(db, "siswa", id)); muatSiswa(); toast("Siswa dihapus");
+};
+
+// ---- Absensi ----
+$("a-tgl").value = hariIni();
+$("a-kelas").onchange = muatAbsensi; $("a-tgl").onchange = muatAbsensi;
+async function muatAbsensi() {
+  const kid = $("a-kelas").value, tgl = $("a-tgl").value, box = $("a-list");
+  if (!kid || !tgl) { box.innerHTML = `<p class="mut">Pilih kelas dan tanggal.</p>`; return; }
+  box.innerHTML = `<p class="mut">Memuat...</p>`;
+  const sis = await siswaDi(kid);
+  const a = await getDocs(query(collection(db, "absensi"), where("kelasId", "==", kid), where("tanggal", "==", tgl)));
+  const ada = {}; a.docs.forEach(d => ada[d.data().siswaId] = d.data());
+  S.cur = {}; sis.forEach(s => S.cur[s.id] = { status: ada[s.id]?.status || "H", catatan: ada[s.id]?.catatan || "" });
+  if (!sis.length) { box.innerHTML = `<p class="mut">Belum ada siswa di kelas ini. Admin dapat menambahkannya di menu Siswa.</p>`; return; }
+  box.innerHTML = sis.map((s, i) => `<div class="sis" data-id="${s.id}"><div class="n">${i+1}. ${esc(s.nama)}</div>
+    <div class="st">${["H","S","I","A"].map(k => `<button data-s="${k}" class="${S.cur[s.id].status === k ? "on" : ""}" aria-label="${esc(s.nama)}: ${k}">${k}</button>`).join("")}</div>
+    <input class="cat ${S.cur[s.id].status === "H" ? "hide" : ""}" placeholder="Catatan (opsional)" value="${esc(S.cur[s.id].catatan)}"></div>`).join("") +
+    `<p class="mut">H = Hadir, S = Sakit, I = Izin, A = Alpa. Semua siswa otomatis Hadir; ketuk hanya yang tidak hadir.</p>
+    <div class="bar"><button class="btn alt" id="a-semua" style="flex:none">Semua hadir</button><button class="btn" id="a-simpan">Simpan absensi</button></div>`;
+}
+$("a-list").onclick = e => {
+  const row = e.target.closest(".sis"); 
+  if (e.target.id === "a-semua") { Object.values(S.cur).forEach(v => v.status = "H"); return muatTampilanStatus(); }
+  if (e.target.id === "a-simpan") return simpanAbsensi();
+  const s = e.target.dataset.s; if (!s || !row) return;
+  S.cur[row.dataset.id].status = s; muatTampilanStatus();
+};
+$("a-list").oninput = e => { const row = e.target.closest(".sis"); if (row && e.target.classList.contains("cat")) S.cur[row.dataset.id].catatan = e.target.value; };
+function muatTampilanStatus() {
+  document.querySelectorAll("#a-list .sis").forEach(r => {
+    const v = S.cur[r.dataset.id];
+    r.querySelectorAll(".st button").forEach(b => b.classList.toggle("on", b.dataset.s === v.status));
+    r.querySelector(".cat").classList.toggle("hide", v.status === "H");
+  });
+}
+async function simpanAbsensi() {
+  const kelasId = $("a-kelas").value, tanggal = $("a-tgl").value, bulan = tanggal.slice(0, 7);
+  const b = writeBatch(db);
+  Object.entries(S.cur).forEach(([siswaId, v]) => b.set(doc(db, "absensi", `${tanggal}_${siswaId}`), {
+    tanggal, bulan, kelasId, siswaId, status: v.status, catatan: v.status === "H" ? "" : v.catatan,
+    oleh: S.profil.nama || S.user.email, olehUid: S.user.uid, ts: serverTimestamp()
+  }));
+  try { await b.commit(); toast("Absensi tersimpan"); } catch (e) { toast("Gagal menyimpan. Periksa koneksi lalu coba lagi."); }
+}
+
+// ---- Laporan ----
+$("l-bln").value = hariIni().slice(0, 7);
+$("l-tampil").onclick = async () => {
+  const kid = $("l-kelas").value, bln = $("l-bln").value;
+  if (!kid || !bln) return toast("Pilih kelas dan bulan dulu");
+  $("l-out").innerHTML = `<p class="mut">Memuat...</p>`;
+  const sis = await siswaDi(kid);
+  const a = await getDocs(query(collection(db, "absensi"), where("kelasId", "==", kid), where("bulan", "==", bln)));
+  const data = a.docs.map(d => d.data());
+  const tgls = [...new Set(data.map(d => d.tanggal))].sort();
+  const peta = {}; data.forEach(d => (peta[d.siswaId] ||= {})[d.tanggal] = d.status);
+  const rows = sis.map(s => {
+    const c = { H: 0, S: 0, I: 0, A: 0 };
+    tgls.forEach(t => { const x = peta[s.id]?.[t]; if (x) c[x]++; });
+    return { s, c, pct: tgls.length ? Math.round(c.H / tgls.length * 100) : 0 };
+  });
+  S.lap = { kelas: $("l-kelas").selectedOptions[0].text, bln, tgls, peta, rows };
+  renderLaporan();
+};
+function renderLaporan() {
+  const L = S.lap; if (!L) return;
+  if (!L.tgls.length) { $("l-out").innerHTML = `<p class="mut">Belum ada absensi untuk bulan ini.</p>`; return; }
+  const th = L.tgls.map(t => `<th>${+t.slice(8)}</th>`).join("");
+  const tr = L.rows.map((r, i) => `<tr><td class="l">${i+1}. ${esc(r.s.nama)}</td>${L.tgls.map(t => { const x = L.peta[r.s.id]?.[t] || ""; return `<td class="${x}">${x || "-"}</td>`; }).join("")}<td>${r.c.H}</td><td>${r.c.S}</td><td>${r.c.I}</td><td>${r.c.A}</td><td><b>${r.pct}%</b></td></tr>`).join("");
+  $("l-out").innerHTML = `<h2>Kelas ${esc(L.kelas)}, bulan ${esc(L.bln)}</h2><p class="mut">${L.tgls.length} hari tercatat. Angka di kepala kolom adalah tanggal.</p>
+  <div class="sc"><table><thead><tr><th class="l">Nama</th>${th}<th>H</th><th>S</th><th>I</th><th>A</th><th>%</th></tr></thead><tbody>${tr}</tbody></table></div>`;
+}
+$("l-cetak").onclick = async () => { if (!S.lap) await $("l-tampil").onclick(); print(); };
+$("l-csv").onclick = async () => {
+  if (!S.lap) await $("l-tampil").onclick();
+  const L = S.lap; if (!L || !L.tgls.length) return toast("Belum ada data untuk diunduh");
+  const q = v => `"${String(v ?? "").replace(/"/g, '""')}"`;
+  const lines = [["Nama","NIS",...L.tgls.map(t => +t.slice(8)),"H","S","I","A","Persen hadir"].map(q).join(",")];
+  L.rows.forEach(r => lines.push([r.s.nama, r.s.nis || "", ...L.tgls.map(t => L.peta[r.s.id]?.[t] || "-"), r.c.H, r.c.S, r.c.I, r.c.A, r.pct + "%"].map(q).join(",")));
+  const url = URL.createObjectURL(new Blob(["\ufeff" + lines.join("\r\n")], { type: "text/csv;charset=utf-8" }));
+  const a = document.createElement("a"); a.href = url; a.download = `absensi-${L.kelas}-${L.bln}.csv`.replace(/\s+/g, "-"); a.click(); URL.revokeObjectURL(url);
+};
+</script>
+</body>
+</html>
